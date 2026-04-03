@@ -1,0 +1,335 @@
+{
+  "name": "DMSW — TikTok Script Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1,3,5"
+            }
+          ]
+        }
+      },
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "q",      "value": "tendances TikTok entrepreneurs France 2026" },
+            { "name": "api_key","value": "={{ $env.SERPAPI_KEY }}" },
+            { "name": "hl",     "value": "fr" },
+            { "name": "gl",     "value": "fr" },
+            { "name": "num",    "value": "5" },
+            { "name": "engine", "value": "google" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Search TikTok Tendances",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "q",      "value": "problèmes entrepreneurs solo site web France" },
+            { "name": "api_key","value": "={{ $env.SERPAPI_KEY }}" },
+            { "name": "hl",     "value": "fr" },
+            { "name": "gl",     "value": "fr" },
+            { "name": "num",    "value": "5" },
+            { "name": "engine", "value": "google" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-bcde-f01234567891",
+      "name": "Search Entrepreneurs Problemes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "q",      "value": "agence web TikTok viral contenu idées" },
+            { "name": "api_key","value": "={{ $env.SERPAPI_KEY }}" },
+            { "name": "hl",     "value": "fr" },
+            { "name": "gl",     "value": "fr" },
+            { "name": "num",    "value": "5" },
+            { "name": "engine", "value": "google" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c3d4e5f6-a7b8-9012-cdef-012345678912",
+      "name": "Search Agence TikTok Idees",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [480, 600]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-defa-123456789123",
+      "name": "Merge Recherches",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [760, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const allResults = $input.all();\nconst sources = [\n  'TikTok Tendances 2026',\n  'Problèmes Entrepreneurs Solo',\n  'Agence Web TikTok Idées'\n];\n\nconst tendances = allResults.map((item, index) => {\n  const data = item.json;\n  const source = sources[index] || 'Source ' + (index + 1);\n  const resultats = [];\n\n  if (data.answer_box) {\n    resultats.push({\n      titre: data.answer_box.title || 'Encart vedette',\n      extrait: data.answer_box.snippet || data.answer_box.answer || ''\n    });\n  }\n\n  if (data.organic_results && Array.isArray(data.organic_results)) {\n    data.organic_results.slice(0, 4).forEach(r => {\n      resultats.push({\n        titre: r.title || '',\n        extrait: r.snippet || ''\n      });\n    });\n  }\n\n  if (data.related_questions && Array.isArray(data.related_questions)) {\n    data.related_questions.slice(0, 2).forEach(q => {\n      resultats.push({\n        titre: q.question || '',\n        extrait: q.snippet || ''\n      });\n    });\n  }\n\n  return { source, resultats };\n});\n\nreturn [{ json: { tendances: JSON.stringify(tendances, null, 2) } }];"
+      },
+      "id": "e5f6a7b8-c9d0-1234-efab-234567890234",
+      "name": "Formater Tendances",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const tendances = $input.first().json.tendances;\n\nconst jsonSchema = [\n  '{',\n  '  \"id\": 1,',\n  '  \"hook\": \"phrase accroche choc en moins de 8 mots\",',\n  '  \"angle\": \"education | coulisses | opinion\",',\n  '  \"format\": \"texte_anime | screen_recording | voix_off\",',\n  '  \"script\": \"script complet mot pour mot, 30 à 60 secondes parlé\",',\n  '  \"visuels\": \"description précise de ce que l on voit à l écran\",',\n  '  \"cta\": \"appel à l action final\",',\n  '  \"hashtags\": [\"#tag1\", \"#tag2\", \"#tag3\", \"#tag4\", \"#tag5\"],',\n  '  \"duree_secondes\": 45',\n  '}'\n].join('\\n');\n\nconst systemPrompt = [\n  'Tu es un expert en contenu TikTok viral pour le marché français.',\n  'Tu travailles pour DMSW, une agence web qui cible les entrepreneurs solo.',\n  'Les vidéos ne montrent jamais de visage — uniquement du texte animé,',\n  'screen recording ou voix off sur visuels.',\n  '',\n  'À partir des tendances fournies, génère exactement 3 scripts de vidéos TikTok.',\n  'Chaque script doit être percutant, direct, et filmable sans caméra.',\n  '',\n  'RÈGLES IMPÉRATIVES :',\n  '- Le hook doit créer une curiosité irrésistible en moins de 8 mots',\n  '- Le script est mot pour mot, naturel, parlé en français direct',\n  '- Les visuels décrivent précisément ce qui apparaît à l écran',\n  '- Durée réaliste entre 30 et 60 secondes de parole',\n  '',\n  'Retourne UNIQUEMENT un tableau JSON valide (3 objets), sans markdown, sans commentaire :',\n  '[ ' + jsonSchema + ' ]'\n].join('\\n');\n\nconst userMessage = 'Voici les tendances actuelles du marché :\\n\\n' + tendances + '\\n\\nGénère 3 scripts TikTok percutants pour DMSW ciblant les entrepreneurs solo français.';\n\nconst payload = {\n  model: 'claude-sonnet-4-20250514',\n  max_tokens: 2000,\n  system: systemPrompt,\n  messages: [{ role: 'user', content: userMessage }]\n};\n\nreturn [{ json: { claudePayload: JSON.stringify(payload) } }];"
+      },
+      "id": "aa112233-bb44-cc55-dd66-ee7788990011",
+      "name": "Preparer Payload Claude",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key",          "value": "={{ $env.ANTHROPIC_API_KEY }}" },
+            { "name": "anthropic-version",   "value": "2023-06-01" },
+            { "name": "content-type",        "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claudePayload }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "f6a7b8c9-d0e1-2345-fabc-345678901345",
+      "name": "Claude Generate Scripts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1480, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.content[0].text;\nlet scripts;\ntry {\n  scripts = JSON.parse(raw);\n} catch (e) {\n  // Claude peut ajouter du markdown malgré les instructions\n  const cleaned = raw\n    .replace(/^```json\\s*/m, '')\n    .replace(/^```\\s*/m, '')\n    .replace(/```\\s*$/m, '')\n    .trim();\n  scripts = JSON.parse(cleaned);\n}\n\nif (!Array.isArray(scripts)) {\n  throw new Error('Claude n a pas retourné un tableau JSON. Réponse : ' + raw.substring(0, 200));\n}\n\nreturn scripts.map(s => ({ json: s }));"
+      },
+      "id": "a7b8c9d0-e1f2-3456-abcd-456789012456",
+      "name": "Parse Scripts JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1720, 400]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": {
+          "__rl": true,
+          "value": "={{ $env.NOTION_DATABASE_ID }}",
+          "mode": "id"
+        },
+        "title": "={{ $json.hook }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Angle",
+              "type": "select",
+              "selectValue": "={{ $json.angle }}"
+            },
+            {
+              "key": "Format",
+              "type": "select",
+              "selectValue": "={{ $json.format }}"
+            },
+            {
+              "key": "Script",
+              "type": "richText",
+              "textContent": "={{ $json.script }}"
+            },
+            {
+              "key": "Visuels",
+              "type": "richText",
+              "textContent": "={{ $json.visuels }}"
+            },
+            {
+              "key": "CTA",
+              "type": "richText",
+              "textContent": "={{ $json.cta }}"
+            },
+            {
+              "key": "Hashtags",
+              "type": "multiSelect",
+              "multiSelectValue": "={{ Array.isArray($json.hashtags) ? $json.hashtags.join(',') : $json.hashtags }}"
+            },
+            {
+              "key": "Durée (s)",
+              "type": "number",
+              "numberValue": "={{ $json.duree_secondes }}"
+            },
+            {
+              "key": "Statut",
+              "type": "select",
+              "selectValue": "À générer"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b8c9d0e1-f2a3-4567-bcde-567890123567",
+      "name": "Notion Creer Page",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1980, 260],
+      "credentials": {
+        "notionApi": {
+          "id": "REMPLACER_PAR_CREDENTIAL_ID",
+          "name": "Notion API DMSW"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const scripts = $input.all();\nconst date = DateTime.now().setLocale('fr').toFormat('EEEE d MMMM yyyy');\n\nconst angleEmoji = { education: '📚', coulisses: '🎭', opinion: '💬' };\nconst formatEmoji = { texte_anime: '✨', screen_recording: '🖥️', voix_off: '🎙️' };\n\nlet rows = '';\nscripts.forEach((item, i) => {\n  const s = item.json;\n  const ae = angleEmoji[s.angle] || '📌';\n  const fe = formatEmoji[s.format] || '🎬';\n  const tags = Array.isArray(s.hashtags)\n    ? s.hashtags.map(h => '<span style=\"background:#0a2040;color:#1a82d4;padding:2px 7px;border-radius:3px;font-size:11px;\">' + h + '</span>').join(' ')\n    : String(s.hashtags || '');\n\n  rows += '<tr>';\n  rows += '<td style=\"padding:16px 20px;border-bottom:1px solid #1a3a5c;\">';\n  rows += '<p style=\"margin:0 0 6px;color:#1a82d4;font-size:17px;font-weight:bold;\">#' + (i + 1) + ' ' + s.hook + '</p>';\n  rows += '<p style=\"margin:0 0 10px;color:#888;font-size:13px;\">' + ae + ' ' + s.angle + ' &nbsp;|&nbsp; ' + fe + ' ' + s.format + ' &nbsp;|&nbsp; ⏱ ' + s.duree_secondes + 's</p>';\n  rows += '<p style=\"margin:0 0 10px;color:#ccc;font-size:13px;background:#061020;padding:10px 14px;border-left:3px solid #1a82d4;border-radius:0 4px 4px 0;font-style:italic;\">\"' + s.cta + '\"</p>';\n  rows += '<p style=\"margin:0;\">' + tags + '</p>';\n  rows += '</td>';\n  rows += '</tr>';\n});\n\nconst html = '<!DOCTYPE html><html lang=\"fr\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"></head>'\n  + '<body style=\"margin:0;padding:20px;background:#0d1b2a;font-family:Arial,sans-serif;\">'\n  + '<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width:620px;margin:0 auto;\">'\n  + '<tr><td style=\"background:#0d1b2a;border:1px solid #1a82d4;border-radius:8px;overflow:hidden;\">'\n  + '<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">'\n  + '<tr><td style=\"padding:22px 20px;background:#061020;border-bottom:2px solid #1a82d4;\">'\n  + '<h1 style=\"margin:0;color:#1a82d4;font-size:20px;\">🎬 3 scripts TikTok générés</h1>'\n  + '<p style=\"margin:4px 0 0;color:#666;font-size:13px;text-transform:capitalize;\">' + date + '</p>'\n  + '</td></tr>'\n  + rows\n  + '<tr><td style=\"padding:14px 20px;text-align:center;border-top:1px solid #1a3a5c;\">'\n  + '<p style=\"margin:0;color:#444;font-size:11px;\">DMSW — Système TikTok Automatisé · Les 3 vidéos sont planifiées pour génération</p>'\n  + '</td></tr>'\n  + '</table></td></tr></table></body></html>';\n\nreturn [{ json: { html, subject: '🎬 3 scripts TikTok prêts — ' + date, scriptCount: scripts.length } }];"
+      },
+      "id": "c9d0e1f2-a3b4-5678-cdef-678901234678",
+      "name": "Construire Email HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1980, 560]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $env.GMAIL_TO }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "d0e1f2a3-b4c5-6789-defa-789012345789",
+      "name": "Gmail Envoyer Resume",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2220, 560],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REMPLACER_PAR_CREDENTIAL_ID",
+          "name": "Gmail OAuth2 DMSW"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          { "node": "Search TikTok Tendances",       "type": "main", "index": 0 },
+          { "node": "Search Entrepreneurs Problemes","type": "main", "index": 0 },
+          { "node": "Search Agence TikTok Idees",    "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Search TikTok Tendances": {
+      "main": [
+        [ { "node": "Merge Recherches", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Search Entrepreneurs Problemes": {
+      "main": [
+        [ { "node": "Merge Recherches", "type": "main", "index": 1 } ]
+      ]
+    },
+    "Search Agence TikTok Idees": {
+      "main": [
+        [ { "node": "Merge Recherches", "type": "main", "index": 2 } ]
+      ]
+    },
+    "Merge Recherches": {
+      "main": [
+        [ { "node": "Formater Tendances", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Formater Tendances": {
+      "main": [
+        [ { "node": "Preparer Payload Claude", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Preparer Payload Claude": {
+      "main": [
+        [ { "node": "Claude Generate Scripts", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Claude Generate Scripts": {
+      "main": [
+        [ { "node": "Parse Scripts JSON", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Parse Scripts JSON": {
+      "main": [
+        [
+          { "node": "Notion Creer Page",       "type": "main", "index": 0 },
+          { "node": "Construire Email HTML",   "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Construire Email HTML": {
+      "main": [
+        [ { "node": "Gmail Envoyer Resume", "type": "main", "index": 0 } ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "dmsw-tiktok"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "id": "tag-dmsw-001",
+      "name": "DMSW TikTok",
+      "createdAt": "2026-04-02T00:00:00.000Z",
+      "updatedAt": "2026-04-02T00:00:00.000Z"
+    }
+  ]
+}
