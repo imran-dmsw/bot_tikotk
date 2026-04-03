@@ -1,0 +1,430 @@
+{
+  "name": "DMSW TikTok Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "scheduleTrigger",
+      "name": "ScheduleTrigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "api_key", "value": "={{$env.SERPAPI_KEY}}"},
+            {"name": "q", "value": "tendances marketing digital france entrepreneurs"},
+            {"name": "gl", "value": "fr"},
+            {"name": "hl", "value": "fr"},
+            {"name": "num", "value": "5"}
+          ]
+        }
+      },
+      "id": "serpApiTrendsX3",
+      "name": "SerpAPITrendsX3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ {\"trends\": $json.organic_results || []} }}"
+      },
+      "id": "mergeTrends",
+      "name": "MergeTrends",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "x-api-key", "value": "={{$env.ANTHROPIC_API_KEY}}"},
+            {"name": "anthropic-version", "value": "2023-06-01"},
+            {"name": "content-type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"model\":\"claude-sonnet-4-20250514\",\"max_tokens\":2000,\"system\":\"Tu es un expert en contenu TikTok viral pour le marché français.\",\"messages\":[{\"role\":\"user\",\"content\":\"Tendances: \" + JSON.stringify($json.trends)}]} }}"
+      },
+      "id": "claudeGenerateScripts",
+      "name": "ClaudeGenerateScripts",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [950, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.content?.[0]?.text || '[]';\nconst scripts = JSON.parse(raw);\nreturn scripts.map((script) => ({json: script}));"
+      },
+      "id": "split3Scripts",
+      "name": "Split3Scripts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "resource": "page",
+        "operation": "create",
+        "databaseId": "={{$env.NOTION_DATABASE_ID}}",
+        "propertiesUi": {
+          "propertyValues": [
+            {"key": "Name", "title": "={{$json.hook}}"},
+            {"key": "Script", "richText": "={{$json.script}}"},
+            {"key": "CTA", "richText": "={{$json.cta}}"}
+          ]
+        }
+      },
+      "id": "notionCreatePages",
+      "name": "NotionCreatePages",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1450, 220],
+      "credentials": {
+        "notionApi": {
+          "id": "NOTION_CREDENTIAL_ID",
+          "name": "Notion Placeholder"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "npm run pipeline"
+      },
+      "id": "remotionRenderVideo",
+      "name": "RemotionRenderVideo",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1450, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bufferapp.com/1/updates/create.json",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{$env.BUFFER_ACCESS_TOKEN}}"},
+            {"name": "Content-Type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ {\"profile_ids\":[$env.BUFFER_PROFILE_ID],\"text\":\"DMSW TikTok auto-publish\",\"scheduled_at\":$now.plus({hours:24}).toISO()} }}"
+      },
+      "id": "bufferSchedulePlus24h",
+      "name": "BufferSchedulePlus24h",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1700, 380]
+    },
+    {
+      "parameters": {
+        "sendTo": "team@placeholder.local",
+        "subject": "DMSW TikTok Pipeline - Résumé",
+        "emailType": "text",
+        "message": "={{'Pipeline exécuté. Résultat Buffer: ' + JSON.stringify($json)}}"
+      },
+      "id": "gmailSummary",
+      "name": "GmailSummary",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1950, 380],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GMAIL_CREDENTIAL_ID",
+          "name": "Gmail Placeholder"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "ScheduleTrigger": {
+      "main": [[{"node": "SerpAPITrendsX3", "type": "main", "index": 0}]]
+    },
+    "SerpAPITrendsX3": {
+      "main": [[{"node": "MergeTrends", "type": "main", "index": 0}]]
+    },
+    "MergeTrends": {
+      "main": [[{"node": "ClaudeGenerateScripts", "type": "main", "index": 0}]]
+    },
+    "ClaudeGenerateScripts": {
+      "main": [[{"node": "Split3Scripts", "type": "main", "index": 0}]]
+    },
+    "Split3Scripts": {
+      "main": [
+        [{"node": "NotionCreatePages", "type": "main", "index": 0}],
+        [{"node": "RemotionRenderVideo", "type": "main", "index": 0}]
+      ]
+    },
+    "RemotionRenderVideo": {
+      "main": [[{"node": "BufferSchedulePlus24h", "type": "main", "index": 0}]]
+    },
+    "NotionCreatePages": {
+      "main": [[{"node": "GmailSummary", "type": "main", "index": 0}]]
+    },
+    "BufferSchedulePlus24h": {
+      "main": [[{"node": "GmailSummary", "type": "main", "index": 0}]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
+{
+  "name": "DMSW TikTok Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1,3,5"
+            }
+          ]
+        }
+      },
+      "id": "schedule_trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "api_key", "value": "={{$env.SERPAPI_KEY}}"},
+            {"name": "q", "value": "tendance TikTok France business"},
+            {"name": "gl", "value": "fr"},
+            {"name": "hl", "value": "fr"}
+          ]
+        }
+      },
+      "id": "serp_1",
+      "name": "HTTP Request SerpAPI 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [340, 120]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "api_key", "value": "={{$env.SERPAPI_KEY}}"},
+            {"name": "q", "value": "marketing digital entrepreneurs solo france"},
+            {"name": "gl", "value": "fr"},
+            {"name": "hl", "value": "fr"}
+          ]
+        }
+      },
+      "id": "serp_2",
+      "name": "HTTP Request SerpAPI 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [340, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "api_key", "value": "={{$env.SERPAPI_KEY}}"},
+            {"name": "q", "value": "outils IA productivite PME france"},
+            {"name": "gl", "value": "fr"},
+            {"name": "hl", "value": "fr"}
+          ]
+        }
+      },
+      "id": "serp_3",
+      "name": "HTTP Request SerpAPI 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [340, 480]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "merge_trends",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "x-api-key", "value": "={{$env.ANTHROPIC_API_KEY}}"},
+            {"name": "anthropic-version", "value": "2023-06-01"},
+            {"name": "content-type", "value": "application/json"}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\":\"claude-sonnet-4-20250514\",\"max_tokens\":2000,\"system\":\"Tu es un expert en contenu TikTok viral pour le marché français.\\nTu travailles pour DMSW, une agence web ciblant les entrepreneurs solo.\\nLes vidéos ne montrent jamais de visage : texte animé, screen recording ou voix off uniquement.\\n\\nÀ partir des tendances fournies, génère exactement 3 scripts TikTok percutants.\\n\\nRetourne UNIQUEMENT ce tableau JSON valide, sans markdown ni texte autour :\\n[\\n  {\\n    \\\"id\\\": 1,\\n    \\\"hook\\\": \\\"accroche choc en moins de 8 mots\\\",\\n    \\\"angle\\\": \\\"education | coulisses | opinion\\\",\\n    \\\"format\\\": \\\"texte_anime | screen_recording | voix_off\\\",\\n    \\\"script\\\": \\\"script complet mot pour mot, 30 à 60 secondes parlé\\\",\\n    \\\"visuels\\\": \\\"description précise de ce qu'on voit à l'écran\\\",\\n    \\\"cta\\\": \\\"appel à l'action final\\\",\\n    \\\"hashtags\\\": [\\\"#tag1\\\",\\\"#tag2\\\",\\\"#tag3\\\",\\\"#tag4\\\",\\\"#tag5\\\"],\\n    \\\"duree_secondes\\\": 45\\n  }\\n]\",\"messages\":[{\"role\":\"user\",\"content\":\"Tendances agrégées: {{$json}}\"}]}"
+      },
+      "id": "claude_request",
+      "name": "HTTP Request Claude",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 300]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const raw = $json.content?.[0]?.text ?? '[]';\nconst scripts = JSON.parse(raw);\nreturn scripts.map((s) => ({ json: s }));"
+      },
+      "id": "code_split",
+      "name": "Code Parse & Split",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "resource": "page",
+        "operation": "create",
+        "databaseId": "={{$env.NOTION_DATABASE_ID}}",
+        "title": "={{$json.hook}}",
+        "propertiesUi": {
+          "propertyValues": [
+            {"key": "hook", "title": "Hook", "textContent": "={{$json.hook}}"},
+            {"key": "angle", "title": "Angle", "textContent": "={{$json.angle}}"},
+            {"key": "format", "title": "Format", "textContent": "={{$json.format}}"},
+            {"key": "script", "title": "Script", "textContent": "={{$json.script}}"}
+          ]
+        }
+      },
+      "id": "notion_create",
+      "name": "Notion",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1220, 220],
+      "credentials": {
+        "notionApi": {
+          "id": "notion_placeholder",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "cd {{$env.PROJECT_ROOT}} && npx ts-node src/scripts/renderVideo.ts"
+      },
+      "id": "exec_render",
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1220, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bufferapp.com/1/updates/create.json",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {"name": "access_token", "value": "={{$env.BUFFER_ACCESS_TOKEN}}"},
+            {"name": "profile_ids[]", "value": "YOUR_BUFFER_PROFILE_ID"},
+            {"name": "text", "value": "={{$json.hook + ' ' + ($json.hashtags || []).join(' ')}}"},
+            {"name": "media[video]", "value": "https://example.com/video.mp4"},
+            {"name": "scheduled_at", "value": "={{new Date(Date.now() + 24*60*60*1000).toISOString()}}"}
+          ]
+        }
+      },
+      "id": "buffer_publish",
+      "name": "HTTP Request Buffer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1440, 300]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$env.GMAIL_USER}}",
+        "subject": "DMSW TikTok - Résumé du jour",
+        "emailType": "text",
+        "message": "={{'Hooks générés:\\n' + $items('Code Parse & Split').map(i => '- ' + i.json.hook).join('\\n')}}"
+      },
+      "id": "gmail_summary",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1660, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail_placeholder",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {"node": "HTTP Request SerpAPI 1", "type": "main", "index": 0},
+          {"node": "HTTP Request SerpAPI 2", "type": "main", "index": 0},
+          {"node": "HTTP Request SerpAPI 3", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "HTTP Request SerpAPI 1": {"main": [[{"node": "Merge", "type": "main", "index": 0}]]},
+    "HTTP Request SerpAPI 2": {"main": [[{"node": "Merge", "type": "main", "index": 1}]]},
+    "HTTP Request SerpAPI 3": {"main": [[{"node": "Merge", "type": "main", "index": 2}]]},
+    "Merge": {"main": [[{"node": "HTTP Request Claude", "type": "main", "index": 0}]]},
+    "HTTP Request Claude": {"main": [[{"node": "Code Parse & Split", "type": "main", "index": 0}]]},
+    "Code Parse & Split": {
+      "main": [
+        [
+          {"node": "Notion", "type": "main", "index": 0},
+          {"node": "Execute Command", "type": "main", "index": 0},
+          {"node": "Gmail", "type": "main", "index": 0}
+        ]
+      ]
+    },
+    "Execute Command": {"main": [[{"node": "HTTP Request Buffer", "type": "main", "index": 0}]]},
+    "HTTP Request Buffer": {"main": [[{"node": "Gmail", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dmsw-tiktok-v1"
+}
