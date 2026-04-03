@@ -6,7 +6,7 @@ import 'dotenv/config';
 
 export async function renderVideo(props: {
   hook: string;
-  bullets: string[];
+  revelation: string;
   cta: string;
   voiceOverPath?: string;
   outputPath: string;
@@ -34,7 +34,7 @@ export async function renderVideo(props: {
       id: 'DMSWTikTok',
       inputProps: {
         hook: props.hook,
-        bullets: props.bullets,
+        revelation: props.revelation,
         cta: props.cta
       }
     });
@@ -47,7 +47,7 @@ export async function renderVideo(props: {
       outputLocation: outputPath,
       inputProps: {
         hook: props.hook,
-        bullets: props.bullets,
+        revelation: props.revelation,
         cta: props.cta
       },
       onProgress: ({progress}) => {
@@ -65,9 +65,9 @@ export async function renderVideo(props: {
 async function main(): Promise<void> {
   try {
     await renderVideo({
-      hook: 'Ton site web est une honte.',
-      bullets: ['Design pro sur mesure', 'Livre en 7 jours', 'Zero abonnement cache'],
-      cta: 'Lien en bio',
+      hook: 'Ce site a été livré en 7 jours.',
+      revelation: 'Livraison 10 jours — Zéro effort',
+      cta: 'Audit gratuit — dmsw.fr',
       outputPath: 'out/dmsw-test.mp4'
     });
   } catch (error) {

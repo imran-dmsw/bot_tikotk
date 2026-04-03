@@ -80,13 +80,28 @@ export async function generateScript(): Promise<TikTokScript[]> {
     const trends = await fetchDailyTrendsFr();
     const trendsText = trends.map((trend, idx) => `${idx + 1}. ${trend}`).join('\n');
 
+    const dmswContext = `
+Qui est DMSW:
+- Agence de création de sites web sur-mesure pour commerces locaux, restaurateurs, indépendants.
+- Livraison en 10 jours, clé en main: design + rédaction + SEO + mise en ligne.
+- Zéro effort client, on gère tout.
+- NFC + fiche Google inclus selon pack.
+- Packs:
+  - Pack Connect — 490€ — commerce local — site 5 pages + NFC + Google
+  - Pack Restaurant Smart — 390€ — resto/café — menu NFC + 5 tags + fiche Google
+  - Pack Business Digital — 890€ — entreprises/freelances — site premium + SEO avancé
+- Clients & preuves: SmashCasa, Villa Pearl, Luxgreen, SPC Music, Train de Vie, EdiConnect, Boho & Babouche, Marrakech Villa.
+- Avis: SmashCasa “Un travail remarquable”, Villa Pearl “plus de confiance”, Luxgreen “développement international”.
+- Identité: #1a82d4, fond #0d1b2a, Syne 800 / Inter, ton direct & concret.
+    `.trim();
+
     const dmswMustMention = [
       'Livraison en 10 jours',
       'Site web sur-mesure (design + rédaction + SEO + mise en ligne)',
       'Zéro effort client (on gère tout)',
-      'NFC + fiches Google (selon pack)',
-      'Un pack DMSW (Connect / Restaurant Smart / Business Digital)',
-      'Preuves / avis clients DMSW (ex : SmashCasa, Villa Pearl, Luxgreen)'
+      'NFC + fiche Google (selon pack)',
+      'Pack DMSW (Connect / Restaurant Smart / Business Digital)',
+      'Preuves/Avis clients DMSW (SmashCasa, Villa Pearl, Luxgreen)'
     ].join(', ');
 
     const response = await axios.post(
@@ -98,7 +113,7 @@ export async function generateScript(): Promise<TikTokScript[]> {
         messages: [
           {
             role: 'user',
-            content: `Tendances du jour (France):\n${trendsText}\n\nContraintes DMSW (obligatoire): pour CHACUN des 3 scripts, mentionne au moins un élément DMSW parmi: ${dmswMustMention}. La mention peut être dans le hook, le script ou le CTA. Les vidéos ne montrent jamais de visage: texte animé, screen recording ou voix off uniquement.`
+            content: `Tendances du jour (France):\n${trendsText}\n\nContexte DMSW:\n${dmswContext}\n\nContraintes DMSW (obligatoire):\n- Pour CHACUN des 3 scripts, mentionne au moins un élément DMSW parmi: ${dmswMustMention}.\n- Positionne le message explicitement pour la cible DMSW (commerces locaux, restaurants, indépendants en France).\n- CTA vers DMSW et son offre (sans lien, juste wording).\n- Pas de visage: texte animé, screen recording ou voix off uniquement.\n- 30 à 60 secondes parlé.\n- Conservation du format JSON strict demandé.`
           }
         ]
       },
@@ -112,7 +127,18 @@ export async function generateScript(): Promise<TikTokScript[]> {
       }
     );
 
-    const raw = response.data.content[0].text;
+    let raw: string = response.data.content[0].text;
+    // Normalisation si Claude renvoie du JSON encadré par des fences ```...```
+    const fenced = raw.trim();
+    if (fenced.startsWith('```')) {
+      raw = fenced.replace(/^```[a-zA-Z0-9_-]*\s*/m, '').replace(/```$/m, '').trim();
+    }
+    // Sécurité: extraire le premier tableau JSON si du texte entoure
+    const firstBracket = raw.indexOf('[');
+    const lastBracket = raw.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket !== -1) {
+      raw = raw.slice(firstBracket, lastBracket + 1);
+    }
     const scripts: TikTokScript[] = JSON.parse(raw);
 
     if (!Array.isArray(scripts) || scripts.length !== 3) {

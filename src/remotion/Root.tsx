@@ -7,12 +7,12 @@ export const RemotionRoot: React.FC = () => {
     <Composition<any, TextAnimationProps>
       id="DMSWTikTok"
       component={TextAnimation}
-      // On force le contrat de props attendu par la composition.
       defaultProps={
         {
-          hook: 'Ton site web est une honte.',
-          bullets: ['Design pro sur mesure', 'Livre en 7 jours', 'Zero abonnement cache'],
-          cta: 'Lien en bio'
+          hook: 'Ce site a été livré en 7 jours.',
+          revelation: 'Livraison 10 jours — Zéro effort',
+          cta: 'Audit gratuit — dmsw.fr',
+          showLogo: true
         } satisfies TextAnimationProps
       }
       width={1080}

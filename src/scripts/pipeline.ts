@@ -37,22 +37,12 @@ function extractDmswSentence(text: string): string | null {
 }
 
 function buildRemotionBullets(script: TikTokScript): string[] {
-  const fallbackBullets = ['Livraison en 10 jours', 'Design + SEO + mise en ligne', 'NFC + fiches Google (selon pack)'];
-
-  const fromScript = extractDmswSentence(script.script) ?? extractDmswSentence(script.visuels) ?? extractDmswSentence(script.cta);
-
-  const bullets: string[] = [];
-  if (fromScript) {
-    bullets.push(fromScript);
-  }
-
-  // On complète pour atteindre 3 bullet points Remotion, en gardant un minimum DMSW visible.
-  for (const fb of fallbackBullets) {
-    if (bullets.length >= 3) break;
-    if (!bullets.includes(fb)) bullets.push(fb);
-  }
-
-  return bullets.slice(0, 3);
+  // Bullets 100% DMSW fixes pour ancrer le thème.
+  return [
+    'Livraison en 10 jours (clé en main)',
+    'Design + Rédaction + SEO + Mise en ligne',
+    'NFC + fiche Google (selon pack)'
+  ];
 }
 
 export async function runPipeline(): Promise<GenerationResult> {
@@ -68,6 +58,19 @@ export async function runPipeline(): Promise<GenerationResult> {
   const videosPaths: string[] = [];
   const notionPageIds: string[] = [];
   const details: PipelineItemResult[] = [];
+
+  // Rotation stricte des hooks (1→5 en boucle), 3 vidéos par run
+  const hookRotation = [
+    'Ton restaurant perd des clients chaque soir.',
+    'Ce site a été livré en 7 jours.',
+    'Ton concurrent prend TES clients. Voilà pourquoi.',
+    "80% des restos n'ont pas de menu en ligne en 2025.",
+    'On a refait leur présence en ligne. Résultat :'
+  ];
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((+now - +startOfYear) / (1000 * 60 * 60 * 24));
+  const baseIndex = dayOfYear % hookRotation.length;
 
   for (const script of scripts) {
     const slug = `${script.id}-${basename(script.hook).replace(/\s+/g, '-').toLowerCase()}`;
@@ -102,10 +105,12 @@ export async function runPipeline(): Promise<GenerationResult> {
       }
 
       console.log(`[pipeline] Étape 3/5: rendu vidéo script #${script.id}...`);
+      // Sélection du hook imposé par rotation
+      const forcedHook = hookRotation[(baseIndex + (script.id - 1)) % hookRotation.length];
       const renderInput = {
-        hook: script.hook,
-        bullets: buildRemotionBullets(script),
-        cta: script.cta,
+        hook: forcedHook,
+        revelation: 'Livraison 10 jours — Zéro effort',
+        cta: 'Audit gratuit — dmsw.fr',
         outputPath: relVideoPath
       } as Parameters<typeof renderVideo>[0];
 
