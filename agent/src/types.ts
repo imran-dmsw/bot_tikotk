@@ -1,7 +1,7 @@
 // ─── Domaine métier ──────────────────────────────────────────────────────────
 
 export type ScriptAngle  = 'education' | 'coulisses' | 'opinion';
-export type ScriptFormat = 'texte_anime' | 'screen_recording' | 'voix_off';
+export type ScriptFormat = 'texte_anime' | 'typo' | 'screen_recording' | 'voix_off';
 
 export interface TikTokScript {
   id:              number;

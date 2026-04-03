@@ -11,4 +11,4 @@ export interface ScriptProps {
   voiceoverSrc?:   string;       // chemin relatif vers le MP3
 }
 
-export type ScriptFormat = 'texte_anime' | 'screen_recording' | 'voix_off';
+export type ScriptFormat = 'texte_anime' | 'typo' | 'screen_recording' | 'voix_off';

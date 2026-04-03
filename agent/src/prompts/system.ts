@@ -22,7 +22,7 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
 2. GÉNÉRATION (réflexion interne)
    À partir des tendances collectées, génère 3 scripts distincts.
    Varie les angles : au moins 1 éducation, 1 coulisses, 1 opinion.
-   Varie les formats : au moins 1 texte_anime, 1 voix_off.
+   Varie les formats : au moins 1 texte_anime, 1 typo, 1 voix_off.
 
    Chaque script doit avoir EXACTEMENT cette structure en 5 scènes visuelles :
    - hook    : accroche choc < 8 mots (question ou affirmation qui arrête le scroll)

@@ -48,7 +48,7 @@ export const TOOL_DEFINITIONS: Tool[] = [
               id:             { type: 'number' },
               hook:           { type: 'string', description: 'Accroche choc < 8 mots' },
               angle:          { type: 'string', enum: ['education', 'coulisses', 'opinion'] },
-              format:         { type: 'string', enum: ['texte_anime', 'screen_recording', 'voix_off'] },
+              format:         { type: 'string', enum: ['texte_anime', 'typo', 'screen_recording', 'voix_off'] },
               script:         { type: 'string', description: 'Texte complet parlé' },
               visuels:        { type: 'string', description: 'Ce que voit le spectateur' },
               cta:            { type: 'string', description: 'Appel à l action final' },
@@ -132,7 +132,7 @@ export const TOOL_DEFINITIONS: Tool[] = [
         script_id: { type: 'number', description: '1, 2 ou 3' },
         format: {
           type: 'string',
-          enum: ['texte_anime', 'screen_recording', 'voix_off'],
+          enum: ['texte_anime', 'typo', 'screen_recording', 'voix_off'],
         },
         hook:     { type: 'string', description: 'Scène 1 — accroche choc < 8 mots' },
         problem:  { type: 'string', description: 'Scène 2 — exposition du problème entrepreneur (1-2 phrases percutantes)' },

@@ -14,7 +14,8 @@ import { join, resolve } from 'path';
 import type { ScriptProps, ScriptFormat } from '../src/lib/types.js';
 
 const FORMAT_TO_COMPOSITION: Record<ScriptFormat, string> = {
-  texte_anime:      'TextAnimation',
+  texte_anime:      'TextAnimation',      // Template 1 — fond navy, layout gauche
+  typo:             'TypographySlide',    // Template 2 — fond noir, typewriter, centré
   screen_recording: 'ScreenRecording',
   voix_off:         'VoiceOver',
 };
