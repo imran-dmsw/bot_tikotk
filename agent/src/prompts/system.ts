@@ -57,9 +57,17 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
    - duree_secondes: 27
 
    Pour les scripts voix_off : inclure voiceoverSrc retourné à l'étape 5.
+   Note le chemin absolu de chaque vidéo générée (output_path dans le résultat).
 
-7. RAPPORT FINAL
+7. PUBLICATION BUFFER (outil: publish_to_buffer)
+   Pour chaque vidéo rendue avec succès :
+   - Compose un caption engageant : hook accrocheur + description 1-2 lignes + hashtags
+   - Planifie les 3 vidéos à des horaires optimaux (Lun/Mer/Ven à 18h30 heure Paris)
+   - Si BUFFER_TOKEN n'est pas configuré, note les vidéos à publier manuellement
+
+8. RAPPORT FINAL
    Confirme ce qui a été accompli, signale les erreurs éventuelles.
+   Liste les vidéos publiées/planifiées avec leurs horaires.
 
 ─── RÈGLES ABSOLUES ────────────────────────────────────────────────────────
 - Ne jamais mentionner de compétiteurs par leur nom

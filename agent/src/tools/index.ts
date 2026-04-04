@@ -1,10 +1,12 @@
 import type { Tool } from '@anthropic-ai/sdk/resources/messages.js';
 import type { TikTokScript, RenderInput, VoiceOverInput } from '../types.js';
+import type { MakePublishInput } from './make.js';
 import { searchWeb }          from './search.js';
 import { saveToNotion }       from './notion.js';
 import { sendEmailSummary }   from './email.js';
 import { triggerVideoRender } from './remotion.js';
 import { generateVoiceOver }  from './elevenlabs.js';
+import { publishToMake }      from './make.js';
 
 // ─── Schémas des outils exposés à Claude ─────────────────────────────────────
 
@@ -119,7 +121,44 @@ export const TOOL_DEFINITIONS: Tool[] = [
     },
   },
 
-  // ── 5. Rendu vidéo Remotion ─────────────────────────────────────────────────
+  // ── 5. Publication Make.com (Bloc 4) ─────────────────────────────────────────
+  {
+    name: 'publish_to_make',
+    description:
+      'Publie automatiquement une vidéo MP4 sur TikTok et Instagram via Make.com. ' +
+      'Upload la vidéo sur file.io (URL publique 14 jours), puis déclenche le webhook Make. ' +
+      'Make télécharge la vidéo et la poste sur les réseaux configurés. ' +
+      'Appeler APRÈS trigger_video_render pour chaque vidéo générée avec succès.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        video_path: {
+          type:        'string',
+          description: 'Chemin absolu vers le MP4 généré (ex: /Users/imran/dmsw-tiktok/output/mon_hook.mp4)',
+        },
+        caption: {
+          type:        'string',
+          description: 'Texte complet du post : accroche + description 1-2 lignes + hashtags. Max 2200 caractères.',
+        },
+        hook: {
+          type:        'string',
+          description: 'Hook court du script (utilisé comme titre dans Make)',
+        },
+        hashtags: {
+          type:        'array',
+          items:       { type: 'string' },
+          description: '5 hashtags avec # (ex: ["#TikTok", "#DMSW"])',
+        },
+        scheduled_at: {
+          type:        'string',
+          description: 'Date/heure ISO 8601 (ex: "2026-04-07T18:30:00+02:00"). Absent = publication immédiate.',
+        },
+      },
+      required: ['video_path', 'caption', 'hook', 'hashtags'],
+    },
+  },
+
+  // ── 6. Rendu vidéo Remotion ─────────────────────────────────────────────────
   {
     name: 'trigger_video_render',
     description:
@@ -180,6 +219,9 @@ export async function dispatchTool(
 
     case 'trigger_video_render':
       return triggerVideoRender(input as unknown as RenderInput);
+
+    case 'publish_to_make':
+      return publishToMake(input as unknown as MakePublishInput);
 
     default:
       return JSON.stringify({ error: `Outil inconnu : "${name}"` });
