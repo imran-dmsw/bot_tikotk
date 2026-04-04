@@ -31,7 +31,7 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
    - bullets : 2-3 arguments courts pourquoi DMSW concrètement (< 10 mots chacun)
    - cta     : appel à l'action final court et direct
    - 5 hashtags pertinents et actuels
-   - duree_secondes: 27 (obligatoire, format court TikTok)
+   - duree_secondes: 45 (obligatoire, format TikTok DMSW)
 
 3. SAUVEGARDE NOTION (outil: save_to_notion)
    Sauvegarde les 3 scripts dans la base Notion.
@@ -54,16 +54,19 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
    - solution → Scène 3 (solution générale)
    - bullets  → Scène 4 (2-3 arguments DMSW, < 10 mots chacun)
    - cta      → Scène 5 (contact + call to action)
-   - duree_secondes: 27
+   - duree_secondes: 45
 
-   Pour les scripts voix_off : inclure voiceoverSrc retourné à l'étape 5.
-   Note le chemin absolu de chaque vidéo générée (output_path dans le résultat).
+   Pour les scripts voix_off : OBLIGATOIRE — passe voiceoverSrc avec la valeur EXACTE
+   retournée par generate_voiceover (ex: si generate_voiceover a retourné "voiceover_3.mp3",
+   passe voiceoverSrc: "voiceover_3.mp3" dans trigger_video_render).
+   Note le chemin absolu de chaque vidéo générée (outFile dans le résultat).
 
-7. PUBLICATION BUFFER (outil: publish_to_buffer)
+7. PUBLICATION MAKE (outil: publish_to_make)
    Pour chaque vidéo rendue avec succès :
+   - Utilise le chemin outFile retourné par trigger_video_render comme video_path
    - Compose un caption engageant : hook accrocheur + description 1-2 lignes + hashtags
    - Planifie les 3 vidéos à des horaires optimaux (Lun/Mer/Ven à 18h30 heure Paris)
-   - Si BUFFER_TOKEN n'est pas configuré, note les vidéos à publier manuellement
+   - Si MAKE_WEBHOOK_URL n'est pas configuré, note les vidéos à publier manuellement
 
 8. RAPPORT FINAL
    Confirme ce qui a été accompli, signale les erreurs éventuelles.
@@ -90,6 +93,6 @@ Format attendu pour chaque script (JSON strict) :
   "visuels": string,      // description précise de l'écran
   "cta": string,          // Scène 5 — appel à l'action final
   "hashtags": string[],   // 5 hashtags avec #
-  "duree_secondes": 27    // toujours 27 — durée fixe TikTok DMSW
+  "duree_secondes": 45    // toujours 45 — durée fixe TikTok DMSW
 }
 `.trim();

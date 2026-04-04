@@ -18,7 +18,7 @@ const NODE_BIN = resolve(process.execPath, '..'); // /path/to/node/.../bin
  */
 export async function triggerVideoRender(input: RenderInput): Promise<string> {
   const slug    = input.hook.slice(0, 40).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
-  const outFile = `script_${input.script_id}_${slug}.mp4`;
+  const outFile = `${slug}.mp4`;
 
   // ── Mode webhook (n8n / service distant) ────────────────────────────────
   if (WEBHOOK_URL) {
