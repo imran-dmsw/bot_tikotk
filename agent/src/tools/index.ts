@@ -149,6 +149,10 @@ export const TOOL_DEFINITIONS: Tool[] = [
           items:       { type: 'string' },
           description: '5 hashtags avec # (ex: ["#TikTok", "#DMSW"])',
         },
+        linkedin_post: {
+          type:        'string',
+          description: 'Post LinkedIn complet adapté au réseau professionnel : accroche percutante, storytelling en 3-5 paragraphes courts, ton direct et expert, 3-5 hashtags professionnels. PAS le même texte que caption TikTok.',
+        },
         scheduled_at: {
           type:        'string',
           description: 'Date/heure ISO 8601 (ex: "2026-04-07T18:30:00+02:00"). Absent = publication immédiate.',

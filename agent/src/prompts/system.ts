@@ -64,7 +64,17 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
 7. PUBLICATION MAKE (outil: publish_to_make)
    Pour chaque vidéo rendue avec succès :
    - Utilise le chemin outFile retourné par trigger_video_render comme video_path
-   - Compose un caption engageant : hook accrocheur + description 1-2 lignes + hashtags
+   - Compose un caption TikTok/Instagram : hook + 1-2 lignes + hashtags (court, percutant)
+   - Compose un linkedin_post DISTINCT adapté à LinkedIn :
+       * Accroche forte sur la 1ère ligne (stoppe le scroll)
+       * Ligne vide
+       * 3-4 paragraphes courts (1-2 phrases chacun) : problème → observation terrain → solution → résultat
+       * Ligne vide
+       * CTA direct (1 phrase)
+       * Ligne vide
+       * 3-5 hashtags professionnels (ex: #Entrepreneuriat #WebMarketing #DMSW)
+       * Ton : direct, expert, sans jargon, comme un entrepreneur qui partage son vécu
+       * PAS d'emojis excessifs — maximum 2-3 par post
    - Planifie les 3 vidéos à des horaires optimaux (Lun/Mer/Ven à 18h30 heure Paris)
    - Si MAKE_WEBHOOK_URL n'est pas configuré, note les vidéos à publier manuellement
 

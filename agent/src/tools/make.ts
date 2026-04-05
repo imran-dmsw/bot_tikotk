@@ -8,11 +8,12 @@ const MAKE_WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL ?? '';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface MakePublishInput {
-  video_path:    string;    // chemin absolu vers le MP4
-  caption:       string;    // texte + hashtags du post
-  hook:          string;    // hook court (pour titre Make)
-  hashtags:      string[];  // hashtags séparés
-  scheduled_at?: string;    // ISO 8601 — absent = immédiat
+  video_path:     string;    // chemin absolu vers le MP4
+  caption:        string;    // texte + hashtags du post TikTok/Instagram
+  hook:           string;    // hook court (pour titre Make)
+  hashtags:       string[];  // hashtags séparés
+  linkedin_post?: string;    // post LinkedIn adapté (ton pro, storytelling, 3-5 hashtags)
+  scheduled_at?:  string;    // ISO 8601 — absent = immédiat
 }
 
 // ─── Étape 1 — Upload vidéo sur gofile.io ────────────────────────────────────
@@ -93,14 +94,15 @@ export async function publishToMake(input: MakePublishInput): Promise<string> {
 
     // Étape 2 — Webhook Make
     const payload = {
-      video_url:    videoUrl,
-      caption:      input.caption,
-      hook:         input.hook,
-      hashtags:     input.hashtags,
-      scheduled_at: input.scheduled_at ?? null,
-      source:       'dmsw-tiktok-agent',
-      filename:     basename(input.video_path),
-      timestamp:    new Date().toISOString(),
+      video_url:     videoUrl,
+      caption:       input.caption,
+      hook:          input.hook,
+      hashtags:      input.hashtags,
+      linkedin_post: input.linkedin_post ?? null,
+      scheduled_at:  input.scheduled_at ?? null,
+      source:        'dmsw-tiktok-agent',
+      filename:      basename(input.video_path),
+      timestamp:     new Date().toISOString(),
     };
 
     console.log(`   📡 Envoi webhook Make...`);
