@@ -15,14 +15,15 @@ if (!WEBHOOK_URL) {
 }
 
 const payload = {
-  video_url:    'https://file.io/test-dmsw-video.mp4',
-  caption:      'Votre site est trop beau pour vendre 🎯\n\nOn transforme votre vitrine en machine à vendre.\n\n#MarketingDigital #DMSW #TikTokFrance #SEO #ConversionRate',
-  hook:         'Votre site est trop beau pour vendre',
-  hashtags:     ['#MarketingDigital', '#DMSW', '#TikTokFrance', '#SEO', '#ConversionRate'],
-  scheduled_at: null,
-  source:       'dmsw-tiktok-agent',
-  filename:     'votre_site_est_trop_beau_pour_vendre.mp4',
-  timestamp:    new Date().toISOString(),
+  video_url:     'https://file.io/test-dmsw-video.mp4',
+  caption:       'Votre site est trop beau pour vendre 🎯\n\nOn transforme votre vitrine en machine à vendre.\n\n#MarketingDigital #DMSW #TikTokFrance #SEO #ConversionRate',
+  hook:          'Votre site est trop beau pour vendre',
+  hashtags:      ['#MarketingDigital', '#DMSW', '#TikTokFrance', '#SEO', '#ConversionRate'],
+  linkedin_post: 'Votre site est beau. Mais il ne vend pas.\n\nJ\'ai analysé des dizaines de sites d\'entrepreneurs cette année.\nLe constat est toujours le même : conçus pour impressionner, pas pour convertir.\n\nUn visiteur a 3 secondes pour comprendre ce que vous faites.\nPassé ce délai, il est parti chez votre concurrent.\n\nLa solution ne tient pas au design.\nElle tient à la stratégie commerciale derrière chaque page.\n\nChez DMSW, on construit des sites pensés comme des vendeurs — pas des portfolios.\n\nVous voulez qu\'on regarde votre site ensemble ?\n\n#Entrepreneuriat #WebMarketing #DMSW #Conversion',
+  scheduled_at:  null,
+  source:        'dmsw-tiktok-agent',
+  filename:      'votre_site_est_trop_beau_pour_vendre.mp4',
+  timestamp:     new Date().toISOString(),
 };
 
 console.log('\n📡  Test webhook Make.com...');
