@@ -65,16 +65,46 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
    Pour chaque vidéo rendue avec succès :
    - Utilise le chemin outFile retourné par trigger_video_render comme video_path
    - Compose un caption TikTok/Instagram : hook + 1-2 lignes + hashtags (court, percutant)
-   - Compose un linkedin_post DISTINCT adapté à LinkedIn :
-       * Accroche forte sur la 1ère ligne (stoppe le scroll)
-       * Ligne vide
-       * 3-4 paragraphes courts (1-2 phrases chacun) : problème → observation terrain → solution → résultat
-       * Ligne vide
-       * CTA direct (1 phrase)
-       * Ligne vide
-       * 3-5 hashtags professionnels (ex: #Entrepreneuriat #WebMarketing #DMSW)
-       * Ton : direct, expert, sans jargon, comme un entrepreneur qui partage son vécu
-       * PAS d'emojis excessifs — maximum 2-3 par post
+   - Compose un linkedin_post DISTINCT adapté à LinkedIn.
+     STRUCTURE OBLIGATOIRE (respecte l'ordre exact) :
+
+     LIGNE 1 — HOOK (1 seule phrase, choc, sans contexte)
+       → Doit fonctionner SANS le reste (les gens voient seulement ça avant "voir plus")
+       → Exemples de bons hooks :
+          "Ton site fait fuir tes clients. Sans que tu le saches."
+          "J'ai audité 40 sites d'entrepreneurs cette année. Même erreur partout."
+          "Un beau site ne vend pas. Voici pourquoi."
+       → Jamais de question rhétorique banale, jamais de "Voici mes 5 conseils"
+
+     LIGNE VIDE
+
+     CORPS (5-7 paragraphes de 1-2 lignes MAX, espacés par des lignes vides)
+       → Paragraphe 1 : observation terrain précise (chiffre ou situation concrète)
+       → Paragraphe 2 : la vraie douleur de l'entrepreneur (sans solution encore)
+       → Paragraphe 3 : le retournement — l'insight inattendu
+       → Paragraphe 4 : ce que ça change concrètement
+       → Paragraphe 5 : la leçon ou la solution (amener DMSW naturellement, sans vendre)
+
+     LIGNE VIDE
+
+     CTA (1 phrase, invite à l'action ou pose une question qui génère des commentaires)
+       → Ex : "Tu veux qu'on regarde ton site ensemble ?"
+       → Ex : "C'est quoi la plus grosse erreur que tu as vue sur un site ?"
+
+     LIGNE VIDE
+
+     2-3 HASHTAGS MAX (professionnels et ciblés — PAS #motivation #success)
+       → Ex : #WebMarketing #Entrepreneuriat #DMSW
+
+     RÈGLES DE TON LINKEDIN :
+       * Tutoiement (plus proche de la cible entrepreneur solo)
+       * Zéro jargon marketing ("funnel", "lead generation", "conversion rate")
+       * Zéro emojis dans le corps — maximum 1 seul emoji autorisé et seulement si naturel
+       * Zéro bullet points avec tirets — tout en paragraphes fluides
+       * Zéro "je suis heureux/fier d'annoncer"
+       * Ton : entrepreneur qui partage son vécu, pas un consultant qui donne des leçons
+       * Chiffres concrets même approximatifs ("40 sites audités", "3 secondes pour convaincre")
+       * Post autonome : doit avoir de la valeur SANS regarder la vidéo TikTok
    - Planifie les 3 vidéos à des horaires optimaux (Lun/Mer/Ven à 18h30 heure Paris)
    - Si MAKE_WEBHOOK_URL n'est pas configuré, note les vidéos à publier manuellement
 
