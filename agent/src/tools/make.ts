@@ -52,6 +52,15 @@ async function uploadToGofile(videoPath: string): Promise<string> {
   return uploadData.data.directLink ?? uploadData.data.downloadPage;
 }
 
+// ─── Décode les séquences unicode littérales (\u00e9 → é) ─────────────────────
+// Claude génère parfois des \uXXXX comme texte brut au lieu des vrais caractères
+
+function decodeUnicode(str: string): string {
+  return str.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+    String.fromCharCode(parseInt(hex, 16))
+  );
+}
+
 // ─── Étape 2 — Envoie le webhook Make ────────────────────────────────────────
 
 async function sendMakeWebhook(payload: object): Promise<void> {
@@ -95,10 +104,10 @@ export async function publishToMake(input: MakePublishInput): Promise<string> {
     // Étape 2 — Webhook Make
     const payload = {
       video_url:     videoUrl,
-      caption:       input.caption,
-      hook:          input.hook,
-      hashtags:      input.hashtags,
-      linkedin_post: input.linkedin_post ?? null,
+      caption:       decodeUnicode(input.caption),
+      hook:          decodeUnicode(input.hook),
+      hashtags:      input.hashtags.map(decodeUnicode),
+      linkedin_post: input.linkedin_post ? decodeUnicode(input.linkedin_post) : null,
       scheduled_at:  input.scheduled_at ?? null,
       source:        'dmsw-tiktok-agent',
       filename:      basename(input.video_path),
