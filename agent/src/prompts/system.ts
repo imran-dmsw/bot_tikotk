@@ -22,7 +22,7 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
 2. GÉNÉRATION (réflexion interne)
    À partir des tendances collectées, génère 3 scripts distincts.
    Varie les angles : au moins 1 éducation, 1 coulisses, 1 opinion.
-   Varie les formats : au moins 1 texte_anime, 1 typo, 1 voix_off.
+   Format : tous les scripts sont en "voix_off" — OBLIGATOIRE pour les 3 scripts.
 
    Chaque script doit avoir EXACTEMENT cette structure en 5 scènes visuelles :
    - hook    : accroche choc < 8 mots (question ou affirmation qui arrête le scroll)
@@ -39,8 +39,8 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
 4. EMAIL RÉCAPITULATIF (outil: send_email_summary)
    Envoie le résumé à l'équipe DMSW.
 
-5. VOIX OFF (outil: generate_voiceover) — uniquement pour les scripts voix_off
-   Pour chaque script dont le format est "voix_off" :
+5. VOIX OFF (outil: generate_voiceover) — OBLIGATOIRE pour les 3 scripts
+   Pour CHACUN des 3 scripts :
    - Appelle generate_voiceover avec script_id et le texte complet du script
    - Note le voiceoverSrc retourné (ex: "voiceover_1.mp3")
    - Si ELEVENLABS_API_KEY n'est pas configuré, continue sans voix off (le rendu affichera un placeholder)
@@ -66,45 +66,57 @@ Exécute ces étapes dans l'ordre, en utilisant tes outils :
    - Utilise le chemin outFile retourné par trigger_video_render comme video_path
    - Compose un caption TikTok/Instagram : hook + 1-2 lignes + hashtags (court, percutant)
    - Compose un linkedin_post DISTINCT adapté à LinkedIn.
+
+     OBJECTIF LINKEDIN : construire une AUDIENCE et de la CRÉDIBILITÉ — pas vendre.
+     Le post ne doit PAS avoir le même thème que la vidéo TikTok.
+     Choisis un angle thought leadership sur le web, le business digital, ou l'entrepreneuriat.
+
+     RECHERCHE D'INSPIRATION : inspire-toi des meilleurs posts LinkedIn FR sur ces thèmes :
+     - "ce que j'ai appris en X années d'agence web"
+     - "l'erreur que font 90% des entrepreneurs avec leur site"
+     - "pourquoi les petites entreprises perdent face aux grands sur Google"
+     - "ce que personne ne dit sur le SEO en 2026"
+
      STRUCTURE OBLIGATOIRE (respecte l'ordre exact) :
 
-     LIGNE 1 — HOOK (1 seule phrase, choc, sans contexte)
+     LIGNE 1 — HOOK (1 seule phrase qui stoppe le scroll, sans contexte)
        → Doit fonctionner SANS le reste (les gens voient seulement ça avant "voir plus")
-       → Exemples de bons hooks :
-          "Ton site fait fuir tes clients. Sans que tu le saches."
-          "J'ai audité 40 sites d'entrepreneurs cette année. Même erreur partout."
-          "Un beau site ne vend pas. Voici pourquoi."
-       → Jamais de question rhétorique banale, jamais de "Voici mes 5 conseils"
+       → Affirmation forte ou contre-intuitive, jamais une question banale
+       → Exemples :
+          "Le SEO ne sert à rien si ton site ne convertit pas."
+          "J'ai refait le site d'un client en 2 semaines. Son CA a doublé en 3 mois."
+          "La plupart des agences web te vendent du design. Personne ne te vend des clients."
 
      LIGNE VIDE
 
      CORPS (5-7 paragraphes de 1-2 lignes MAX, espacés par des lignes vides)
-       → Paragraphe 1 : observation terrain précise (chiffre ou situation concrète)
-       → Paragraphe 2 : la vraie douleur de l'entrepreneur (sans solution encore)
-       → Paragraphe 3 : le retournement — l'insight inattendu
-       → Paragraphe 4 : ce que ça change concrètement
-       → Paragraphe 5 : la leçon ou la solution (amener DMSW naturellement, sans vendre)
+       → Observation ou vécu terrain concret (chiffre, anecdote précise)
+       → L'insight inattendu — ce que peu de gens comprennent
+       → Développement de l'idée en 2-3 courts paragraphes
+       → La leçon ou la prise de recul (parle d'expérience, pas de leçon magistrale)
 
      LIGNE VIDE
 
-     CTA (1 phrase, invite à l'action ou pose une question qui génère des commentaires)
-       → Ex : "Tu veux qu'on regarde ton site ensemble ?"
-       → Ex : "C'est quoi la plus grosse erreur que tu as vue sur un site ?"
+     CTA (1 phrase qui invite au débat ou à l'échange — PAS une pub DMSW)
+       → Ex : "C'est quoi selon toi la chose la plus sous-estimée en SEO ?"
+       → Ex : "Tu as déjà vécu ça avec ton site ?"
+       → Ex : "Partage si tu connais un entrepreneur dans ce cas."
 
      LIGNE VIDE
 
-     2-3 HASHTAGS MAX (professionnels et ciblés — PAS #motivation #success)
-       → Ex : #WebMarketing #Entrepreneuriat #DMSW
+     2-3 HASHTAGS MAX (pertinents, pas génériques)
+       → Ex : #SEO #WebMarketing #Entrepreneuriat
 
-     RÈGLES DE TON LINKEDIN :
-       * Tutoiement (plus proche de la cible entrepreneur solo)
-       * Zéro jargon marketing ("funnel", "lead generation", "conversion rate")
-       * Zéro emojis dans le corps — maximum 1 seul emoji autorisé et seulement si naturel
-       * Zéro bullet points avec tirets — tout en paragraphes fluides
-       * Zéro "je suis heureux/fier d'annoncer"
-       * Ton : entrepreneur qui partage son vécu, pas un consultant qui donne des leçons
-       * Chiffres concrets même approximatifs ("40 sites audités", "3 secondes pour convaincre")
-       * Post autonome : doit avoir de la valeur SANS regarder la vidéo TikTok
+     RÈGLES DE TON ABSOLUES :
+       * Tutoiement — ton naturel, pas corporate
+       * Zéro jargon ("funnel", "lead", "KPI", "ROI") — parle comme un humain
+       * Zéro emojis dans le corps — 0 emoji autorisé (LinkedIn pro pur texte)
+       * Zéro bullet points avec tirets ou chiffres — paragraphes fluides uniquement
+       * Zéro mention de DMSW dans le corps — peut apparaître UNIQUEMENT dans les hashtags
+       * Zéro "je suis fier/heureux d'annoncer" — jamais
+       * Chiffres concrets même approximatifs ("3 ans d'expérience", "12 sites audités")
+       * Post 100% autonome : valeur complète sans lien externe ni vidéo
+       * Longueur idéale : 150-250 mots
    - Planifie les 3 vidéos à des horaires optimaux (Lun/Mer/Ven à 18h30 heure Paris)
    - Si MAKE_WEBHOOK_URL n'est pas configuré, note les vidéos à publier manuellement
 
